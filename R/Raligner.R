@@ -6,7 +6,6 @@ setClass("assay", slots = list(cell = "data.frame",
 
 # define multiple-assay class----
 setClass("Assays", slots = list(
-                                default = "character",
                                 raw = "assay",
                                 combat = "assay",
                                 cPCA = "assay",
@@ -59,3 +58,5 @@ setClass("Raligner",slots=list(project="character",
                                reduction = "DimRe",
                                mnn_pair = "MNN"
                                ))
+
+

@@ -15,12 +15,13 @@
 
 
 createObj = function(raw_dir,
-                     project_name = "TumorCell", default = "raw"){
+                     project_name = "TumorCell"){
 
+  print("create project...")
   ralign = new("Raligner")
-  ralign@project = project
-  ralign@assay@default = default
+  ralign@project = project_name
 
+  print("load data...")
   rawdata = readRDS(raw_dir)
 
   # judge if meta information and exp information mapping
@@ -34,5 +35,5 @@ createObj = function(raw_dir,
   ralign@meta@gene = rawdata$gene_ann
   ralign@meta@cell = rawdata$cell_ann
   ralign@meta@bulk = rawdata$bulk_ann
-
+  return(ralign)
 }
