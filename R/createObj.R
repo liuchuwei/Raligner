@@ -35,5 +35,8 @@ createObj = function(raw_dir,
   ralign@meta@gene = rawdata$gene_ann
   ralign@meta@cell = rawdata$cell_ann
   ralign@meta@bulk = rawdata$bulk_ann
+  ralign@meta@comb = rbind(rawdata$bulk_ann, rawdata$cell_ann)
+
+
   return(ralign)
 }
