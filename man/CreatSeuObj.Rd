@@ -4,7 +4,7 @@
 \alias{CreatSeuObj}
 \title{Create Seurat object and run dimension reduction}
 \usage{
-CreatSeuObj(exp_mat, ann, type, ndims = 70)
+CreatSeuObj(exp_mat, ann, type = NULL, ndims = 70)
 }
 \arguments{
 \item{exp_mat}{expression dataframe}
