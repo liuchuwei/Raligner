@@ -1,12 +1,12 @@
 require(pryr)
 
 # define single assay class----
-setClass("assay", slots = list(cell = "data.frame",
+setClass("SingleAssay", slots = list(cell = "data.frame",
                                 bulk = "data.frame"))
 
 # define multiple-assay class----
-setClass("Assays", slots = list(raw = "assay",
-                                correct = "assay"))
+setClass("MultAssay", slots = list(raw = "SingleAssay",
+                                correct = "SingleAssay"))
 
 # define meta-information class----
 setClass("metaIn", slot = list(gene = "data.frame",
@@ -21,16 +21,23 @@ setClass("DimRe", slot = list(umap = "data.frame",
 # define pair class----
 setClass("PairData",slots=list(
   pair = "data.frame",
-  correction = "list"
+  correction = "list",
+  bulk_mat = "data.frame",
+  cell_mat = "data.frame"
 ))
 
+# define MNN class----
+setClass("MNN",slots=list(
+  raw = "PairData",
+  correct = "PairData"
+))
 
 # define Raligner class----
 setClass("Raligner",slots=list(project="character",
-                               assay="Assays",
+                               assay="MultAssay",
                                meta ="metaIn",
                                reduction = "DimRe",
-                               mnn_pair = "PairData"
+                               mnn_pair = "MNN"
                                ))
 
 

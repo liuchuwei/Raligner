@@ -13,7 +13,7 @@
 #'
 #' seu = CreatSeuObj(exp_mat = exp_mat, ann = ann, type = type)
 
-CreatSeuObj = function(exp_mat, ann, type, ndims = 70){
+CreatSeuObj = function(exp_mat, ann, type=NULL, ndims = 70){
   library(dplyr)
   library(magrittr)
   seu_obj <- Seurat::CreateSeuratObject(exp_mat,
@@ -21,7 +21,9 @@ CreatSeuObj = function(exp_mat, ann, type, ndims = 70){
                                         min.features = 0,
                                         meta.data = ann %>%
                                           magrittr::set_rownames(ann$Id))
-  seu_obj@meta.data$type = type
+  if (!is.null(type)) {
+    seu_obj@meta.data$type = type
+  }
 
   # mean center the data, important for PCA
   seu_obj <- Seurat::ScaleData(seu_obj,
@@ -43,4 +45,21 @@ CreatSeuObj = function(exp_mat, ann, type, ndims = 70){
                                check_duplicates = FALSE
   )
   return(seu_obj)
+}
+
+# Cluster expression using Seurat clustering function
+cluster_data <- function(seu_obj) {
+  seu_obj <- Seurat::FindNeighbors(seu_obj, reduction = 'pca',
+                                   dims = 1:70,
+                                   k.param = 20,
+                                   force.recalc = TRUE,
+                                   verbose = FALSE)
+
+  seu_obj %<>% Seurat::FindClusters(reduction = 'pca',
+                                    resolution = 5)
+
+  seu_obj@meta.data$cluster <- seu_obj@meta.data$seurat_clusters
+
+  return(seu_obj)
+
 }
