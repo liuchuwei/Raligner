@@ -8,8 +8,11 @@ setClass("assay", slots = list(cell = "data.frame",
 setClass("Assays", slots = list(
                                 raw = "assay",
                                 combat = "assay",
+                                mnn = "assay",
                                 cPCA = "assay",
-                                svd = "assay"))
+                                svd = "assay",
+                                cPCA_mnn = "assay",
+                                svd_mnn = "assay"))
 
 # define meta-information class----
 setClass("metaIn", slot = list(gene = "data.frame",
@@ -58,5 +61,6 @@ setClass("Raligner",slots=list(project="character",
                                reduction = "DimRe",
                                mnn_pair = "MNN"
                                ))
+
 
 
