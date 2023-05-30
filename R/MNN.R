@@ -169,8 +169,8 @@ run_MNN = function(obj, assay="raw", top_DE_genes = 1000, k1 = 3, k2 = 10, ndist
   res = new("PairData")
   res@pair = mnn_pairs
   res@correction = re.ave.out
-  res@bulk_mat =  ref_mat %>% t %>% data.frame()
-  res@cell_mat = targ_mat %>% t %>% data.frame()
+  res@bulk_mat = targ_mat %>% t %>% data.frame()
+  res@cell_mat = ref_mat %>% t %>% data.frame()
 
   if (!assay %in% c("raw", "correct")) {
     stop("assay don't find")
