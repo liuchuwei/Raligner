@@ -19,20 +19,23 @@ CreatSeuObj = function(exp_mat, ann, type=NULL, ndims = 70){
   seu_obj <- Seurat::CreateSeuratObject(exp_mat,
                                         min.cells = 0,
                                         min.features = 0,
-                                        meta.data = ann %>%
-                                          magrittr::set_rownames(ann$Id))
+                                        meta.data = ann )
   if (!is.null(type)) {
     seu_obj@meta.data$type = type
   }
 
   # mean center the data, important for PCA
+  print("Scale data...")
+
+  seu_obj <- Seurat::FindVariableFeatures(seu_obj, selection.method = "vst", nfeatures = 2000)
+
   seu_obj <- Seurat::ScaleData(seu_obj,
                                features = rownames(Seurat::GetAssayData(seu_obj)),
                                do.scale = F)
 
   print("Dimension reduction...")
   seu_obj %<>% Seurat::RunPCA(assay='RNA',
-                              features = rownames(Seurat::GetAssayData(seu_obj)),
+                              features = Seurat::VariableFeatures(object = seu_obj),
                               npcs = ndims, verbose = F)
 
   seu_obj %<>% Seurat::RunUMAP(assay = 'RNA', dims = 1:ndims,

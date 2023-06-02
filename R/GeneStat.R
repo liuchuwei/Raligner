@@ -22,8 +22,8 @@ CalGeneStation = function(obj){
 
 
   print("get differential expression gene among clusters...")
-  Tumor_obj = CreatSeuObj(obj@assay@raw@bulk, obj@meta@bulk)
-  Cell_obj = CreatSeuObj(obj@assay@raw@cell, obj@meta@cell)
+  Tumor_obj = CreatSeuObj(obj@assay@raw@bulk, obj@pData@bulk)
+  Cell_obj = CreatSeuObj(obj@assay@raw@cell, obj@pData@cell)
 
   Tumor_obj <- cluster_data(Tumor_obj)
   Cell_obj <- cluster_data(Cell_obj)
@@ -38,7 +38,7 @@ CalGeneStation = function(obj){
       best_rank = pmin(tumor_rank, CL_rank, na.rm=T)) %>%
     dplyr::left_join(gene_stats, by = 'Gene')
 
-  obj@meta@gene$Gene = obj@meta@gene$symbol
-  obj@meta@gene = dplyr::left_join(DE_genes, obj@meta@gene, by = "Gene")
+  obj@fData$Gene = obj@fData$symbol
+  obj@fData = dplyr::left_join(DE_genes, obj@fData, by = "Gene")
   return(obj)
 }
