@@ -16,8 +16,8 @@ cPCAadj = function(obj, npc = 4){
   require(dplyr)
 
   print("Create Seurat obj")
-  tumor_obj <- CreatSeuObj(obj@assay@raw@bulk, obj@meta@bulk, type='tumor')
-  cell_obj <- CreatSeuObj(obj@assay@raw@cell, obj@meta@cell, type='CL')
+  tumor_obj <- CreatSeuObj(obj@assay$raw@bulk, obj@pData@bulk, type='tumor')
+  cell_obj <- CreatSeuObj(obj@assay$raw@cell, obj@pData@cell, type='CL')
 
   tumor_obj <- cluster_data(tumor_obj)
   cell_obj <- cluster_data(cell_obj)
@@ -28,13 +28,13 @@ cPCAadj = function(obj, npc = 4){
   print("cPCA correction")
   cur_vecs <- cov_diff_eig$rotation[,  c(1:npc), drop = FALSE]
 
-  DE_gene_set <- obj@meta@gene %>%
+  DE_gene_set <- obj@fData %>%
     dplyr::filter(best_rank < 1000) %>%
     .[['Gene']]
 
-  rownames(cur_vecs) <- row.names(obj@assay@raw@bulk)
-  tumor_cor <- resid(lm(as.matrix(obj@assay@raw@bulk) ~ 0 + cur_vecs)) %>% t()
-  cell_cor <- resid(lm(as.matrix(obj@assay@raw@cell) ~ 0 + cur_vecs)) %>% t()
+  rownames(cur_vecs) <- row.names(obj@assay$raw@bulk)
+  tumor_cor <- resid(lm(as.matrix(obj@assay$raw@bulk) ~ 0 + cur_vecs)) %>% t()
+  cell_cor <- resid(lm(as.matrix(obj@assay$raw@cell) ~ 0 + cur_vecs)) %>% t()
 
   res = new("SingleAssay")
   res@cell = cell_cor %>% t() %>% data.frame()
@@ -46,7 +46,7 @@ cPCAadj = function(obj, npc = 4){
 # svd----
 SvdAdj = function(obj, nv = 3){
 
-  dat = obj@assay@raw
+  dat = obj@assay$raw
 
   # Weighting ranks
   combdat = cbind(dat@bulk, dat@cell) %>% t()
@@ -66,8 +66,8 @@ SvdAdj = function(obj, nv = 3){
   nonSVD = irlba::irlba(as.matrix(nonBio), nv = nv)
   svdAdj = BioRank -  nonSVD$u %*% diag(nonSVD$d) %*% t(nonSVD$v)
 
-  bulk_dat = svdAdj[1:ncol(obj@assay@raw@bulk),]
-  cell_dat = svdAdj[(ncol(obj@assay@raw@bulk)+1):nrow(svdAdj),]
+  bulk_dat = svdAdj[1:ncol(obj@assay$raw@bulk),]
+  cell_dat = svdAdj[(ncol(obj@assay$raw@bulk)+1):nrow(svdAdj),]
 
   res = new("SingleAssay")
   res@cell = cell_dat %>% t() %>% data.frame()
@@ -93,12 +93,12 @@ SvdAdj = function(obj, nv = 3){
 
 AssayCorrect = function(obj, method, nv = 3, npc = 4){
 
-  dat = cbind(ralign@assay@raw@bulk,
-              ralign@assay@raw@cell)
+  dat = cbind(obj@assay$raw@bulk,
+              obj@assay$raw@cell)
 
-  type = c(rep("Tumor", ncol(ralign@assay@raw@bulk)),
-           rep("Cell", ncol(ralign@assay@raw@cell)))
-  meta = data.frame(id = ralign@meta@comb$Id, type = type)
+  type = c(rep("Tumor", ncol(obj@assay$raw@bulk)),
+           rep("Cell", ncol(obj@assay$raw@cell)))
+  meta = data.frame(id = obj@pData@comb$id, type = type)
   row.names(meta) = meta$id
 
   if (!method %in% c("combat", "cPCA", "svd")) {
@@ -116,6 +116,6 @@ AssayCorrect = function(obj, method, nv = 3, npc = 4){
     res = SvdAdj(obj, nv = nv)
   }
 
-  obj@assay@correct = res
+  obj@assay$correct = res
   return(obj)
 }

@@ -25,7 +25,7 @@ CreatSeuObj = function(exp_mat, ann, type=NULL, ndims = 70){
   }
 
   # mean center the data, important for PCA
-  print("Scale data...")
+  print("scale data...")
 
   seu_obj <- Seurat::FindVariableFeatures(seu_obj, selection.method = "vst", nfeatures = 2000)
 
@@ -33,7 +33,7 @@ CreatSeuObj = function(exp_mat, ann, type=NULL, ndims = 70){
                                features = rownames(Seurat::GetAssayData(seu_obj)),
                                do.scale = F)
 
-  print("Dimension reduction...")
+  print("dimension reduction...")
   seu_obj %<>% Seurat::RunPCA(assay='RNA',
                               features = Seurat::VariableFeatures(object = seu_obj),
                               npcs = ndims, verbose = F)

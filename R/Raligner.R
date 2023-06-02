@@ -7,8 +7,8 @@ setClass("SingleAssay", slots = list(cell = "data.frame",
 setClass("PairData",slots=list(
   pair = "data.frame",
   correction = "list",
-  bulk_mat = "data.frame",
-  cell_mat = "data.frame"
+  bulk = "data.frame",
+  cell = "data.frame"
 ))
 
 # define MNN class----
@@ -17,10 +17,10 @@ setClass("MNN",slots=list(
   correct = "PairData"
 ))
 
-# define multiple-assay class----
-setClass("MultAssay", slots = list(raw = "SingleAssay",
-                                correct = "SingleAssay",
-                                mnn = "MNN"))
+# # define multiple-assay class----
+# setClass("MultAssay", slots = list(raw = "SingleAssay",
+#                                 correct = "SingleAssay",
+#                                 mnn = "MNN"))
 
 # define meta-information class----
 setClass("metaIn", slot = list(
@@ -35,10 +35,10 @@ setClass("DimRe", slot = list(umap = "data.frame",
 
 # define Raligner class----
 setClass("Raligner",slots=list(project="character",
-                               assay="MultAssay",
+                               assay="list",
                                pData ="metaIn",
                                fData = "data.frame",
-                               dimRe = "DimRe"
+                               dimRe = "list"
 ))
 
 

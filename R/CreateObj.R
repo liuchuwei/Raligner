@@ -26,6 +26,9 @@ createObj = function(cell_dat, cell_ann, bulk_dat, bulk_ann, comb_ann,
   require(dplyr)
   obj = new("Raligner", project = name)
 
+  obj@assay = list()
+  obj@dimRe = list()
+
   # judge if meta information and exp information mapping
   if(!identical(colnames(bulk_dat), row.names(bulk_ann)) &
      identical(colnames(cell_dat), row.names(cell_ann))){
@@ -33,15 +36,17 @@ createObj = function(cell_dat, cell_ann, bulk_dat, bulk_ann, comb_ann,
   }
 
   samGene = intersect(row.names(bulk_dat), row.names(cell_dat))
-  obj@assay@raw@cell = cell_dat[samGene,]
-  obj@assay@raw@bulk = bulk_dat[samGene,]
+  rawAssay = new("SingleAssay")
+  obj@assay$raw = rawAssay
+
+  obj@assay$raw@cell = cell_dat[samGene,]
+  obj@assay$raw@bulk = bulk_dat[samGene,]
 
   hugo = readRDS("data/hugo_2023.rds")
   obj@fData = hugo[match(samGene, hugo$symbol),] %>% data.frame()
   obj@pData@cell = cell_ann %>% data.frame()
   obj@pData@bulk = bulk_ann %>% data.frame()
   obj@pData@comb = combann %>% data.frame()
-
 
   return(obj)
 }

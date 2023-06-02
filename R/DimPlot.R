@@ -10,15 +10,16 @@
 #' @examples
 #' DimPlot(ralign, method = "umap")
 
-DimPlot =  function(obj, method, type = NULL) {
-  subobj = slot(obj, "reduction")
+DimPlot =  function(obj, assay = "raw", method = "umap", type = NULL) {
+  subobj = slot(obj, "dimRe")
+  subobj = subobj[[assay]]
   tissue_colors = get_tissue_colors()
 
-  dat = cbind(obj@meta@comb, slot(subobj, method))
-  colnames(dat)[c(5, 6)] = c("x", "y")
+  dat = cbind(obj@pData@comb, slot(subobj, method))
+  colnames(dat)[c(4, 5)] = c("x", "y")
 
   if (is.null(type)) {
-    dat$type = c(rep("Tumor", nrow(obj@meta@bulk)), rep("Cell", nrow(obj@meta@cell)))
+    dat$type = c(rep("Tumor", nrow(obj@pData@bulk)), rep("Cell", nrow(obj@pData@cell)))
   }
 
   require(ggplot2)
