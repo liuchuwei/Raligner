@@ -11,6 +11,7 @@
 #' DimPlot(ralign, method = "umap")
 
 DimPlot =  function(obj, assay = "raw", method = "umap", type = NULL) {
+
   subobj = slot(obj, "dimRe")
   subobj = subobj[[assay]]
   tissue_colors = get_tissue_colors()
@@ -32,6 +33,7 @@ DimPlot =  function(obj, assay = "raw", method = "umap", type = NULL) {
           text=element_text(size=8),
           legend.margin =margin(0,0,0,0)) +
     guides(fill=FALSE, color=FALSE) +
+    # guides(size=FALSE, color=FALSE) +
     scale_fill_manual(values=tissue_colors) +
     xlab("UMAP 1") +
     ylab("UMAP 2")

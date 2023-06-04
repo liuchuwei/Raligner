@@ -8,7 +8,7 @@
 #'
 #' @examples raligner = CalGeneStation(raligner)
 #'
-CalGeneStation = function(obj){
+CalGeneStation = function(obj, ndims = 70){
 
   library(dplyr)
   print("get gene mean expression and standard variance...")
@@ -23,8 +23,8 @@ CalGeneStation = function(obj){
 
 
   print("get differential expression gene among clusters...")
-  Tumor_obj = CreatSeuObj(obj@assay$raw@bulk, obj@pData@bulk)
-  Cell_obj = CreatSeuObj(obj@assay$raw@cell, obj@pData@cell)
+  Tumor_obj = CreatSeuObj(obj@assay$raw@bulk, obj@pData@bulk, ndims = ndims)
+  Cell_obj = CreatSeuObj(obj@assay$raw@cell, obj@pData@cell, ndims = ndims)
 
   Tumor_obj <- cluster_data(Tumor_obj)
   Cell_obj <- cluster_data(Cell_obj)

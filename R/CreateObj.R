@@ -24,7 +24,7 @@ createObj = function(cell_dat, cell_ann, bulk_dat, bulk_ann, comb_ann,
   print("create project...")
 
   require(dplyr)
-  obj = new("Raligner", project = name)
+  obj = new("Raligner", project = project_name)
 
   obj@assay = list()
   obj@dimRe = list()

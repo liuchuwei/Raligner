@@ -36,24 +36,28 @@ CreatSeuObj = function(exp_mat, ann, type=NULL, ndims = 70){
   print("dimension reduction...")
   seu_obj %<>% Seurat::RunPCA(assay='RNA',
                               features = Seurat::VariableFeatures(object = seu_obj),
-                              npcs = ndims, verbose = F)
+                              npcs = ndims,
+                              verbose = F)
 
-  seu_obj %<>% Seurat::RunUMAP(assay = 'RNA', dims = 1:ndims,
+  seu_obj %<>% Seurat::RunUMAP(assay = 'RNA',
+                               dims = 1:ndims,
                                reduction = 'pca',
                                n.neighbors = 10,
                                min.dist =  0.5,
                                metric = 'euclidean', verbose=F)
-
+  try(
   seu_obj %<>% Seurat::RunTSNE(assay = 'RNA', dims = 1:ndims,
-                               check_duplicates = FALSE
+                                 check_duplicates = FALSE
+  )
+
   )
   return(seu_obj)
 }
 
 # Cluster expression using Seurat clustering function
-cluster_data <- function(seu_obj) {
+cluster_data <- function(seu_obj, ndims = 70) {
   seu_obj <- Seurat::FindNeighbors(seu_obj, reduction = 'pca',
-                                   dims = 1:70,
+                                   dims = 1:ndims,
                                    k.param = 20,
                                    force.recalc = TRUE,
                                    verbose = FALSE)
