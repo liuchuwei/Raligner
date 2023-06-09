@@ -26,8 +26,8 @@ CalGeneStation = function(obj, ndims = 70){
   Tumor_obj = CreatSeuObj(obj@assay$raw@bulk, obj@pData@bulk, ndims = ndims)
   Cell_obj = CreatSeuObj(obj@assay$raw@cell, obj@pData@cell, ndims = ndims)
 
-  Tumor_obj <- cluster_data(Tumor_obj)
-  Cell_obj <- cluster_data(Cell_obj)
+  Tumor_obj <- cluster_data(Tumor_obj, ndims = ndims)
+  Cell_obj <- cluster_data(Cell_obj, ndims = ndims)
 
   tumor_DE_genes <- find_differentially_expressed_genes(Tumor_obj)
   CL_DE_genes <- find_differentially_expressed_genes(Cell_obj)

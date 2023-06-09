@@ -26,6 +26,7 @@ CreatSeuObj = function(exp_mat, ann, type=NULL, ndims = 70){
 
   # mean center the data, important for PCA
   print("scale data...")
+  Seurat::DefaultAssay(seu_obj)<- "RNA"
 
   seu_obj <- Seurat::FindVariableFeatures(seu_obj, selection.method = "vst", nfeatures = 2000)
 

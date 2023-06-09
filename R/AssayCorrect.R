@@ -44,7 +44,7 @@ cPCAadj = function(obj, npc = 4){
 }
 
 # svd----
-SvdAdj = function(obj, nv = 3){
+SvdAdj = function(obj, nv = 3, type = NULL){
 
   dat = obj@assay$raw
 
@@ -61,7 +61,11 @@ SvdAdj = function(obj, nv = 3){
 
   # SVD to remove non-biological effect
   BioRank = NormalRank
-  BioMean = apply(NormalRank, 2, mean)
+  if (type == "sc") {
+    BioMean = apply(NormalRank, 2, mean)
+  }else{
+    BioMean = apply(NormalRank, 1, mean)
+  }
   nonBio = BioRank - BioMean
   nonSVD = irlba::irlba(as.matrix(nonBio), nv = nv)
   svdAdj = BioRank -  nonSVD$u %*% diag(nonSVD$d) %*% t(nonSVD$v)
@@ -91,7 +95,7 @@ SvdAdj = function(obj, nv = 3){
 #' ralginer = AssayCorrect(raligner, method = "combat")
 
 
-AssayCorrect = function(obj, method, nv = 3, npc = 4){
+AssayCorrect = function(obj, method, nv = 3, npc = 4, Seq_type = NULL){
 
   dat = cbind(obj@assay$raw@bulk,
               obj@assay$raw@cell)
@@ -113,7 +117,7 @@ AssayCorrect = function(obj, method, nv = 3, npc = 4){
   }
 
   if (method == "svd") {
-    res = SvdAdj(obj, nv = nv)
+    res = SvdAdj(obj, nv = nv, type = Seq_type)
   }
 
   obj@assay$correct = res
