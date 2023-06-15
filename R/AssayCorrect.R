@@ -95,7 +95,7 @@ SvdAdj = function(obj, nv = 3, type = NULL){
 #' ralginer = AssayCorrect(raligner, method = "combat")
 
 
-AssayCorrect = function(obj, method, nv = 3, npc = 4, Seq_type = NULL){
+AssayCorrect = function(obj, method, nv = 3, npc = 4, Seq_type = "bluk"){
 
   dat = cbind(obj@assay$raw@bulk,
               obj@assay$raw@cell)
