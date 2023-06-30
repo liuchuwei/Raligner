@@ -2,8 +2,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/marakeby/pnet_prostate_paper">
-    <img src="_plots/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/liuchuwei/Raligner">
+    <img src="_plots/logo.png" alt="Logo" width="200" height="180">
   </a>
 
 <h2 align="center">Raligner</h2>
@@ -19,11 +19,35 @@
 <!-- TABLE OF CONTENTS -->
 <details open="open">
   <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
+
+  
   <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+    </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#References">References</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgements">Acknowledgements</a></li>
   </ol>
 </details>
+
+
+<!-- ABOUT THE PROJECT -->
+
+## About The Project
+
+<p align="left">
+  <a href="https://github.com/liuchuwei/Raligner">
+    <img src="_plots/workflow.png" alt="Logo" width="800" height="900">
+  </a>
+  </p>
+
+Overview of the Raligner alignment method.
+
+<!-- GETTING STARTED -->
+
+## Usage
+
+1. Activate the created conda environment
+   ```sh
+   source activate pnet_env
+   ```
+
