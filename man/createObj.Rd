@@ -4,14 +4,27 @@
 \alias{createObj}
 \title{create raligner object}
 \usage{
-createObj(raw_dir, project_name = "TumorCell")
+createObj(
+  cell_dat,
+  cell_ann,
+  bulk_dat,
+  bulk_ann,
+  comb_ann,
+  project_name = "TumorCell"
+)
 }
 \arguments{
-\item{raw_dir}{directory of raw data}
+\item{cell_dat}{cell line expression information}
+
+\item{cell_ann}{cell line meta information}
+
+\item{bulk_dat}{tumor expression information}
+
+\item{bulk_ann}{tumor meta information}
+
+\item{comb_ann}{combined annotaion information}
 
 \item{project_name}{name of project. eg: tcga_cell}
-
-\item{default}{default assays: raw、combat、cPCA、svd}
 }
 \value{
 raligner object

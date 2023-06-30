@@ -4,7 +4,7 @@
 \alias{DimReduce}
 \title{Using seurat method for dimension reduction}
 \usage{
-DimReduce(obj, assay = "raw")
+DimReduce(obj, assay = "raw", mnn = FALSE)
 }
 \arguments{
 \item{obj}{raligner object}

@@ -4,7 +4,7 @@
 \alias{CalGeneStation}
 \title{Calculate gene station}
 \usage{
-CalGeneStation(obj)
+CalGeneStation(obj, ndims = 70)
 }
 \arguments{
 \item{obj}{raligner object}

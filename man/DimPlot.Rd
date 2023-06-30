@@ -4,7 +4,7 @@
 \alias{DimPlot}
 \title{Visualization of dimension reduction result}
 \usage{
-DimPlot(obj, method)
+DimPlot(obj, assay = "raw", method = "umap", type = NULL)
 }
 \arguments{
 \item{obj}{raligner object}

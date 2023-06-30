@@ -4,7 +4,7 @@
 \alias{AssayCorrect}
 \title{AssayCorrect}
 \usage{
-AssayCorrect(obj, method, nv = 3, npc = 4)
+AssayCorrect(obj, method, nv = 3, npc = 4, Seq_type = "bluk")
 }
 \arguments{
 \item{obj}{raligner object}
