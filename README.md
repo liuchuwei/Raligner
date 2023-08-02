@@ -46,5 +46,5 @@ Overview of the Raligner alignment method.
 
 ## Usage
 
-   [Demo](https://drive.google.com/uc?id=135UrtWa_WOLttXeOMCRqekcqimCPLUIF&export=download) Demo for the use of raligner.
+   [Demo](https://drive.google.com/file/d/1N9zOp5XRfFWccFChPXqManVqXNHK7BiU/view?usp=sharing) Demo for the use of raligner.
 
