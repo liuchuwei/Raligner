@@ -1,0 +1,63 @@
+
+```{r}
+library(devtools)
+library(dplyr)
+load_all()
+```
+
+# landscape
+```{r}
+tcga_ccle = readRDS("../log/tcga_ccle.rds")
+immune = data.table::fread("../data/tcga_immune.txt")
+```
+
+# skin & lung subtype
+```{r}
+source("assist.R")
+skin.seu = readRDS("../log/tcga_ccle_skin_immune_subtype.rds")
+skin.subtype.res = FigureS4_subtype_lineage_immune_skin(ralign_obj = tcga_ccle,seu_obj = skin.seu)
+```
+```{r}
+source("assist.R")
+lung.seu = readRDS("../log/tcga_ccle_lung_immune_subtype.rds")
+lung.subtype.res = FigureS4_subtype_lineage_immune_lung(ralign_obj = tcga_ccle,seu_obj = lung.seu)
+```
+
+# skin & lung heatmap
+```{r}
+source("assist.R")
+immune = data.table::fread("../data/ImmGeneSets.txt")
+skin.res = FigureS4_subtype_lineage_immune_skin_enrich(ralign_obj = tcga_ccle,seu_obj = skin.seu)
+p2 = Fig4S_plotPathHeatmap_breast(enrich.res = skin.res) 
+
+pdf(file  = "../log/FigureS4_skin_imm_heatmap.pdf", width = 8, height = 5)
+  p2
+dev.off()
+```
+```{r}
+source("assist.R")
+immune = data.table::fread("../data/ImmGeneSets.txt")
+lung.res = FigureS4_subtype_lineage_immune_lung_enrich(ralign_obj = tcga_ccle,seu_obj = lung.seu)
+p3 = FigS4_plotPathHeatmap_lung(enrich.res = lung.res) 
+
+pdf(file  = "../log/FigureS4_lung_imm_heatmap.pdf", width = 8, height = 5)
+  p3
+dev.off()
+```
+# arrange
+```{r}
+library(ggpubr)
+plist1 = list(skin_dim = skin.subtype.res$subclass_dim, 
+             lung_dim = lung.subtype.res$subclass_dim)
+plist2 = list(skin_bar = skin.subtype.res$immune_bar)
+plist3 = list(lung_bar = lung.subtype.res$immune_bar)
+gp1 = ggarrange(plotlist = plist1, ncol = 2, 
+               labels = c("A", "B"))
+gp2 = ggarrange(plotlist = plist2, ncol = 2, widths = c(1, 2), 
+               labels = c( "C"))
+gp3 = ggarrange(plotlist = plist3, ncol = 2, widths = c(1, 2), 
+               labels = c( "E"))
+gp = ggarrange(gp1, gp2, gp3, nrow = 3, heights = c(1, 1, 1))
+ggsave(gp, filename = "../log/FigureS4_immune_skin_lung.pdf", width = 8, height = 10)
+```
+

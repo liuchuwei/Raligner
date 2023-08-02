@@ -1,0 +1,58 @@
+```{r}
+library(devtools)
+load_all()
+```
+
+# landscape
+```{r}
+tcga_ccle = readRDS("../log/tcga_ccle.rds")
+immune = data.table::fread("../data/tcga_immune.txt")
+```
+
+## mnn pair
+```{r}
+mnn_pair = tcga_ccle@assay$mnn$svd_correct@pair
+id = stringr::str_replace_all(mnn_pair$targ_ID, "[.]", "-")
+subid = stringr::str_sub(id, 1, 12)
+mnn_pair$id = subid
+mnn_pair = dplyr::left_join(mnn_pair, immune, by = "id")
+write.table(mnn_pair, file = "../log/mnn_pair.xls", row.names = F, col.names = T, sep = "\t")
+```
+
+## dim plot
+```{r}
+source("assist.R")
+p1 = Fig4_ImmDim(obj = tcga_ccle, immune = immune) 
+```
+
+# breast subtype
+```{r}
+source("assist.R")
+seu = readRDS("../log/tcga_ccle_breast_immune_subtype.rds")
+res.breast = Figure4_subtype_lineage_immune_breast(ralign_obj = tcga_ccle,seu_obj = seu)
+```
+
+# breast heatmap
+```{r}
+source("assist.R")
+immune = data.table::fread("../data/ImmGeneSets.txt")
+breast.res = Figure4_subtype_lineage_immune_breast_enrich(ralign_obj = tcga_ccle,seu_obj = seu)
+p2 = Fig4_plotPathHeatmap_breast(enrich.res = breast.res) 
+
+pdf(file  = "../log/Figure4_breast_imm_heatmap.pdf", width = 8, height = 5)
+  p2
+dev.off()
+```
+
+# arrange
+```{r}
+library(ggpubr)
+gp1 = ggarrange(plotlist = p1[2:5], ncol = 2, nrow = 2, labels = c("B","C", "D", "E"))
+gp2 = ggarrange(plotlist = list(landscape = p1$landscape, breast_subtype = res.breast$subclass_dim),
+                labels = c("A", "F"), widths = c(1.2, 1))
+gp3 = ggarrange(res.breast$immune_bar, ncol = 2, widths = c(1,2), labels = ("G"))
+gp = ggarrange(gp1, gp2, gp3, nrow = 3, heights = c(1.5, 1, 1))
+
+ggsave(gp, filename = "../log/Figure4_immune.pdf", width = 8, height = 11)
+```
+

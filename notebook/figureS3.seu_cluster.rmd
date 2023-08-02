@@ -1,0 +1,41 @@
+# load data
+```{r}
+library(devtools)
+load_all()
+tcga_seu = readRDS("../log/tcga_ccle_svd_seu.rds")
+array_seu = readRDS("../log/array_ccle_svd_seu.rds")
+tcga_ccle = readRDS("../log/tcga_ccle.rds")
+array_ccle = readRDS("../log/array_ccle.rds")
+```
+
+# dimplot
+```{r}
+p1 = Seurat::DimPlot(tcga_seu, reduction = "umap", group.by  = "seurat_clusters", label = TRUE, pt.size = 0.5) + Seurat::NoLegend() +
+    theme(text=element_text(size=10))
+
+p2 = Seurat::DimPlot(array_seu, reduction = "umap", group.by  = "seurat_clusters", label = TRUE, pt.size = 0.5) + Seurat::NoLegend() +
+    theme(text=element_text(size=10))
+
+```
+# tidy meta data
+```{r}
+source("assist.R")
+tcga_meta = readRDS("../log/tcga_ccle_cluster_meta.rds")
+```
+
+# visualzation mixture and mismatching
+
+```{r}
+mix_mis.res = FigureS3_mixture_mismatching(tcga_meta)
+```
+# arrange
+```{r}
+library(ggpubr)
+plist1 = list(tcga_seu_dim = p1, array_seu_dim = p2)
+plist2 = list(mismatch = mix_mis.res$mismatch, mixture = mix_mis.res$mixture)
+
+gp1 = ggarrange(plotlist = plist1, ncol = 2, labels = c("A", "B"), widths = c(1.2, 1))
+gp2 = ggarrange(plotlist = plist2, ncol = 2, labels = c("C", "D"))
+gp = ggarrange(gp1, gp2, nrow = 2, heights = c(1,1))
+ggsave(gp, filename = "../log/figureS3.seu_cluster.pdf", width = 8, height = 8)
+```

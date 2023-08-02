@@ -1,0 +1,109 @@
+# load assay
+```{r}
+library(dplyr)
+library(devtools)
+load_all()
+ralign = readRDS("../log/array_ccle.rds")
+```
+
+# visualization
+## Raw dimplot
+```{r}
+source("assist.R")
+dat = cbind(ralign@pData@comb, ralign@dimRe$raw@umap)
+colnames(dat)[c(4, 5)] = c("x", "y")
+dat$type = c(rep("Tumor", nrow(ralign@pData@bulk)), rep("Cell", nrow(ralign@pData@cell)))
+
+p1 = Fig1_DimPlot(dat)
+p1
+```
+
+## svd correct dimplot
+```{r}
+dat = cbind(ralign@pData@comb, ralign@dimRe$svd_correct@umap)
+colnames(dat)[c(4, 5)] = c("x", "y")
+dat$type = c(rep("Tumor", nrow(ralign@pData@bulk)), rep("Cell", nrow(ralign@pData@cell)))
+
+p2 = Fig1_DimPlot(dat)
+p2
+```
+## mnn correct dimplot
+```{r}
+dat = cbind(ralign@pData@comb, ralign@dimRe$mnn_svd_correct@umap)
+colnames(dat)[c(4, 5)] = c("x", "y")
+dat$type = c(rep("Tumor", nrow(ralign@pData@bulk)), rep("Cell", nrow(ralign@pData@cell)))
+
+p3 = Fig1_DimPlot(dat)
+p3
+```
+## raw density plot
+```{r}
+source("assist.R")
+DE_genes = ralign@fData
+DE_gene_set <- DE_genes %>%
+  dplyr::filter(best_rank < 1000) %>%
+  .[["Gene"]]
+
+cell = reshape2::melt(ralign@assay$raw@cell[DE_gene_set,])
+cell$type = "Cell"
+bulk = reshape2::melt(ralign@assay$raw@bulk[DE_gene_set,])
+bulk$type = "Tumor"
+
+dat = rbind(cell, bulk)
+require(ggplot2)
+p4 = Fig1_DenPlot(dat)
+p4
+```
+## correct density plot
+```{r}
+DE_genes = ralign@fData
+DE_gene_set <- DE_genes %>%
+  dplyr::filter(best_rank < 1000) %>%
+  .[["Gene"]]
+
+cell = reshape2::melt(ralign@assay$svd_correct@cell[DE_gene_set,])
+cell$type = "Cell"
+bulk = reshape2::melt(ralign@assay$svd_correct@bulk[DE_gene_set,])
+bulk$type = "Tumor"
+
+dat = rbind(cell, bulk)
+require(ggplot2)
+p5 = Fig1_DenPlot(dat)
+p5
+```
+## mnn density plot
+```{r}
+DE_genes = ralign@fData
+DE_gene_set <- DE_genes %>%
+  dplyr::filter(best_rank < 1000) %>%
+  .[["Gene"]]
+
+cell = reshape2::melt(ralign@assay$mnn$svd_correct@cell[DE_gene_set,])
+cell$type = "Cell"
+bulk = reshape2::melt(ralign@assay$mnn$svd_correct@bulk[DE_gene_set,])
+bulk$type = "Tumor"
+
+dat = rbind(cell, bulk)
+require(ggplot2)
+p6 = Fig1_DenPlot(dat)
+p6
+```
+## arrange
+```{r}
+library(ggpubr)
+
+plist = list(p1 = p1, p2 = p2, p3 = p3) 
+
+aP1 = ggarrange(plotlist = plist,
+          labels = c("B", "C", "D"),
+          ncol = 1, nrow = 3)
+
+plist = list(p1 = p4, p2 = p5, p3 = p6) 
+aP2 = ggarrange(plotlist = plist,
+          labels = c("E", "F", "G"),
+          ncol = 3, nrow = 1)
+
+ggsave(aP1, filename = "../log/figure1_B_C_D.pdf", width = 4.5, height = 9.5)
+# ggsave(aP2, filename = "../log/figure1_denplot.pdf", width = 8, height = 2)
+```
+

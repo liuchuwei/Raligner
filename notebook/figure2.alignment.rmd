@@ -1,0 +1,119 @@
+```{r}
+library(devtools)
+load_all()
+```
+
+# tcga cell line
+## whole
+```{r}
+source("assist.R")
+tcga_cell = readRDS("../log/tcga_ccle.rds")
+p1 = Fig2_tcga_ccle(tcga_cell) 
+```
+
+## breast
+```{r}
+p2 = Figure2_lineage_breast(tcga_cell)
+```
+
+
+# array cell line
+```{r}
+source("assist.R")
+array_cell = readRDS("../log/array_ccle.rds")
+p3 = Fig2_array_cell(array_cell)
+p4 = Fig2_array_cell_subtype(array_cell)
+```
+
+# mnn pairs
+```{r}
+pair = data.frame(
+  methods = c("mnn", "mnn_cPCA", "raligner"),
+  pairs = c(nrow(array_cell@assay$mnn$raw@pair), 
+            nrow(array_cell@assay$mnn$cPCA_correct@pair), 
+            nrow(array_cell@assay$mnn$svd_correct@pair))
+)
+
+df = pair
+p5 = ggplot(data=df, aes(x=methods, y=pairs, fill = methods)) +
+  geom_bar(stat="identity")+
+  geom_text(aes(label=pairs), vjust=-0.2, size=3)+
+  theme_classic() +
+  ylab("Mutual Near Neighbour Numbers") +
+  theme(axis.title.x = element_blank(),
+        legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+        axis.text = element_text(size = 8)) +
+  scale_fill_manual(values = c(`mnn` = "#ff7f00",`mnn_cPCA`="#33a02c",`raligner` = "#6a3d9a"))+
+  theme(plot.margin =unit(c(3,0,1,0),'lines'))
+
+pair = data.frame(
+  methods = c("mnn", "mnn_cPCA", "raligner"),
+  pairs = c(nrow(tcga_cell@assay$mnn$raw@pair), 
+            nrow(tcga_cell@assay$mnn$cPCA_correct@pair), 
+            nrow(tcga_cell@assay$mnn$svd_correct@pair))
+)
+
+df = pair
+p6 = ggplot(data=df, aes(x=methods, y=pairs, fill = methods)) +
+  geom_bar(stat="identity")+
+  geom_text(aes(label=pairs), vjust=-0.2, size=3)+
+  theme_classic() +
+  ylab("Mutual Near Neighbour Numbers") +
+  theme(axis.title.x = element_blank(),
+        legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+        axis.text = element_text(size = 8)) +
+  scale_fill_manual(values = c(`mnn` = "#ff7f00",`mnn_cPCA`="#33a02c",`raligner` = "#6a3d9a"))+
+  theme(plot.margin =unit(c(3,0,1,0),'lines'))
+
+
+pair_time = data.frame(
+  methods = c("mnn_cPCA", "raligner"),
+  pairs = c(tcga_cell@assay$cPCA_correct@time, tcga_cell@assay$svd_correct@time)
+)
+
+pair_time$pairs = round(as.numeric(pair_time$pairs),2)
+df = pair_time
+p7 = ggplot(data=df, aes(x=methods, y=pairs, fill = methods)) +
+  geom_bar(stat="identity")+
+  geom_text(aes(label=pairs), vjust=-0.2, size=3)+
+  theme_classic() +
+  ylab("Running time (minute)") +
+  theme(axis.title.x = element_blank(),
+        legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+        axis.text = element_text(size = 8)) +
+  scale_fill_manual(values = c(`mnn_cPCA`="#33a02c",`raligner` = "#6a3d9a")) +
+  theme(plot.margin =unit(c(3,0,1,0),'lines'))
+
+```
+
+
+## arrange
+```{r}
+library(ggpubr)
+
+
+plist1 = list(p2 = p2, p3 = p3)
+gp1 = ggarrange(plotlist = plist1, labels = c("B", "C"),
+                ncol = 2)
+
+plist2 = list(p4 = p4, p5 = p5, p6 = p6, p7 = p7)
+gp2 = ggarrange(plotlist = plist2, ncol = 4, nrow = 1, 
+          labels = c("D", "E", "F", "G"),
+          widths = c(6,1.5,1.5,1))
+
+gp3 = ggarrange(gp1,
+                gp2,
+                nrow = 2)
+
+gp4 = ggarrange(p1,
+                gp3,
+                labels = c("A"),
+                nrow = 2,
+          heights = c(1, 1.5))
+
+ggsave(gp4, filename = "../log/figure2_alignment.pdf", width = 8, height = 12)
+```
+

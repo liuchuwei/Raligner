@@ -1,0 +1,38 @@
+```{r}
+library(devtools)
+load_all()
+```
+
+# landscape: skin lung breast
+```{r}
+tcga_ccle = readRDS("../log/tcga_ccle.rds")
+```
+
+## dim plot
+```{r}
+source("assist.R")
+p1 = FigS2_landscape(obj = tcga_ccle) 
+```
+
+# lung subtype
+```{r}
+source("assist.R")
+p2 = FigS2_lineage_lung(obj = tcga_ccle)
+```
+
+# skin subtype
+```{r}
+source("assist.R")
+p3 = FigS2_lineage_skin(obj = tcga_ccle)
+```
+
+# arrange
+```{r}
+library(ggpubr)
+
+plist = list(lung = p2, skin = p3)
+gp1 =  ggarrange(plotlist = plist, ncol = 2, labels = c("B", "C"))
+gp = ggarrange(p1, gp1, nrow = 2, labels = c("A"), heights = c(1.2, 1))
+ggsave(gp, filename = "../log/figureS2.skin_lung_lineage.pdf", width = 8, height = 8)
+```
+

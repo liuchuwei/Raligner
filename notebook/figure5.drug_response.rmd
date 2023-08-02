@@ -1,0 +1,173 @@
+# model performance
+```{r}
+pcc = readRDS("../model/pcc_performance.rds")
+write.table(pcc, file = "../log/pcc.xls", sep = "\t", row.names = F, col.names = T)
+```
+
+## visualization
+```{r}
+library(ggplot2)
+dat = pcc[order(pcc$pcc),]
+dat$id = c(1:nrow(dat))
+
+p1 = ggplot(dat, aes(x = id, y = pcc)) +
+  geom_point() +
+  theme_classic() +
+  ylab("Pearson Correlation Coefficient") +
+  theme(axis.title.x = element_blank())+
+  geom_hline(aes(yintercept=0.40)) +
+  theme( plot.margin = unit(c(0, 0, 0, 0), "cm"))
+ 
+```
+
+# model_performance
+## TCGA 5FU
+```{r}
+tcga_5fu = readRDS("../model/TCGA_5FU.rds")
+write.table(tcga_5fu, file = "../log/tcga_5fu.xls", sep = "\t", row.names = F, col.names = T)
+
+library(survival)
+library(survminer)
+fit <- survfit(Surv(OS.time, OS) ~ type, data = tcga_5fu)
+p2 = ggsurvplot(fit, pval = TRUE, risk.table = TRUE, palette = c("#e31a1c", "#33a02c"))
+```
+
+## TCGA Lapatinib
+```{r}
+tcga_lapatinib = readRDS("../model/TCGA_Lapatinib.rds")
+write.table(tcga_lapatinib, file = "../log/tcga_lapatinib.xls", sep = "\t", row.names = F, col.names = T)
+
+## response
+p3 = ggplot(data = tcga_lapatinib, aes(x = subtype, y = lambda.min, color=subtype)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width=0.3, height=0.2), size = 0.8) +
+  stat_compare_means(label.x = 2) +
+  theme_classic() +
+  ylab("Predicted Drug Response") +
+  theme(axis.title.x = element_blank() ,
+        axis.text.x = element_text(face = "bold", angle = 30, hjust = 1)) +
+  scale_color_manual(values = c(`Response` = "#33a02c", `Non_response` = "#e31a1c")) +
+  theme(legend.position = "none") +
+  ggtitle("Lapatinib, BRCA") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10))+
+  scale_color_manual(values = c(`0` = "#984ea3", `1+` = "#33a02c",
+                                `2+` = "#e31a1c", `3+` = "#ff7f00")) 
+
+## signal
+p4 = ggplot(data = tcga_lapatinib, aes(x = subtype, y = erbb2, color=subtype)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width=0.3, height=0.2), size = 0.8) +
+  stat_compare_means(label.x = 2) +
+  theme_classic() +
+  ylab("REACTOME_SIGNALING_BY_ERBB2") +
+  theme(axis.title.x = element_blank() ,
+        axis.text.x = element_text(face = "bold", angle = 30, hjust = 1)) +
+  scale_color_manual(values = c(`Response` = "#33a02c", `Non_response` = "#e31a1c")) +
+  theme(legend.position = "none") +
+  ggtitle("BRCA, ERBB2 SIGNALING") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10))+
+  scale_color_manual(values = c(`0` = "#984ea3", `1+` = "#33a02c",
+                                `2+` = "#e31a1c", `3+` = "#ff7f00")) 
+
+## coordinate
+library(reshape2)
+library(ggplot2)
+erbb2_latent = readRDS("../model/ERBB2_latent.rds")
+cormat <- round(cor(erbb2_latent),2)
+get_upper_tri <- function(cormat){
+  cormat[lower.tri(cormat)]<- NA
+  return(cormat)
+}
+upper_tri <- get_upper_tri(cormat)
+melted_cormat <- melt(upper_tri, na.rm = TRUE)
+p5 = ggplot(data = melted_cormat, aes(Var2, Var1, fill = value))+
+  geom_tile(color = "white")+
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+                       name="Pearson\nCorrelation") +
+  theme_minimal() +
+  coord_fixed() +
+  ggtitle("ERBB2 SIGNALING Latent") +
+  theme(plot.title = element_text(hjust = 0.4, size = 10),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+         legend.key.size = unit(10, "pt"),
+        # legend.position = "bottom",
+        legend.title =  element_text(size = 8),
+        legend.text = element_text(size = 8))
+```
+
+
+## TCGA Met
+```{r}
+Crizotinib = readRDS("../model/TCGA_Crizotinib.rds")
+p6 = ggplot(data = Crizotinib, aes(x = cnv_num, y = lambda.min, color=cnv_num)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width=0.3, height=0.2), alpha = 0.8, size = 0.5, outlier.shape = NA) +
+  stat_compare_means(label.x = 1.4) +
+  theme_classic() +
+  ylab("Predicted Drug Response") +
+  theme(axis.title.x = element_blank() ,
+        axis.text.x = element_text(face = "bold", angle = 30, hjust = 1)) +
+  scale_color_manual(values = c(`Response` = "#33a02c", `Non_response` = "#e31a1c")) +
+  theme(legend.position = "none") +
+  ggtitle("Crizotinib") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10))+
+  scale_color_manual(values = c(`-1` = "#984ea3", `0` = "#33a02c",
+                                `1` = "#e31a1c")) 
+
+write.table(Crizotinib, file = "../log/tcga_Crizotinib.xls", sep = "\t", row.names = F, col.names = T)
+
+PHA665752 = readRDS("../model/TCGA_PHA-665752.rds")
+p7 = ggplot(data = PHA665752, aes(x = cnv_num, y = lambda.min, color=cnv_num)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width=0.3, height=0.2), alpha = 0.8, size = 0.5, outlier.shape = NA) +
+  stat_compare_means(label.x = 1.4) +
+  theme_classic() +
+  ylab("Predicted Drug Response") +
+  theme(axis.title.x = element_blank() ,
+        axis.text.x = element_text(face = "bold", angle = 30, hjust = 1)) +
+  scale_color_manual(values = c(`Response` = "#33a02c", `Non_response` = "#e31a1c")) +
+  theme(legend.position = "none") +
+  ggtitle("PHA665752") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10))+
+  scale_color_manual(values = c(`-1` = "#984ea3", `0` = "#33a02c",
+                                `1` = "#e31a1c")) 
+write.table(PHA665752, file = "../log/tcga_PHA665752.xls", sep = "\t", row.names = F, col.names = T)
+
+Foretinib = readRDS("../model/TCGA_Foretinib.rds")
+p8 = ggplot(data = Foretinib, aes(x = cnv_num, y = lambda.min, color=cnv_num)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width=0.3, height=0.2), alpha = 0.8, size = 0.5, outlier.shape = NA) +
+  stat_compare_means(label.x = 1.4) +
+  theme_classic() +
+  ylab("Predicted Drug Response") +
+  theme(axis.title.x = element_blank() ,
+        axis.text.x = element_text(face = "bold", angle = 30, hjust = 1)) +
+  scale_color_manual(values = c(`Response` = "#33a02c", `Non_response` = "#e31a1c")) +
+  theme(legend.position = "none") +
+  ggtitle("Foretinib") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10))+
+  scale_color_manual(values = c(`-1` = "#984ea3", `0` = "#33a02c",
+                                `1` = "#e31a1c")) 
+
+write.table(Foretinib, file = "../log/tcga_Foretinib.xls", sep = "\t", row.names = F, col.names = T)
+
+```
+# arrange
+```{r}
+library(ggpubr)
+plist1 = list(p2$plot, p2$table)
+gp1 = ggarrange(plotlist = plist1, nrow = 2, heights = c(3, 1), labels = c("A", "B"))
+
+gp2 = ggarrange(p1, p2$plot, ncol = 2, widths = c(1.5, 1), labels = c("A", "B"))
+
+plist2 = list(p3, p4, p5)
+gp3 = ggarrange(plotlist = plist2, ncol = 3, widths = c(1, 1, 1.5), labels = c("C", "D", "E"))
+
+plist3 = list(p6, p7, p8)
+gp4 = ggarrange(plotlist = plist3, ncol = 3, labels = c("F", "G", "H"))
+gp = ggarrange(gp2, gp3, gp4, nrow = 3)
+ggsave(gp, filename = "../log/Figure5.drug.pdf", width = 8, height = 10)
+```
+

@@ -1,0 +1,134 @@
+# load assay
+```{r}
+library(dplyr)
+load_all()
+ralign = readRDS("../log/array_ccle.rds")
+```
+
+## raw density plot
+```{r}
+source("assist.R")
+DE_genes = ralign@fData
+DE_gene_set <- DE_genes %>%
+  dplyr::filter(best_rank < 1000) %>%
+  .[["Gene"]]
+
+cell = reshape2::melt(ralign@assay$raw@cell[DE_gene_set,])
+cell$type = "Cell"
+bulk = reshape2::melt(ralign@assay$raw@bulk[DE_gene_set,])
+bulk$type = "Tumor"
+
+dat = rbind(cell, bulk)
+require(ggplot2)
+p1 = Figs1_DenPlot(dat)
+```
+
+## svd correct density plot
+```{r}
+DE_genes = ralign@fData
+DE_gene_set <- DE_genes %>%
+  dplyr::filter(best_rank < 1000) %>%
+  .[["Gene"]]
+
+cell = reshape2::melt(ralign@assay$svd_correct@cell[DE_gene_set,])
+cell$type = "Cell"
+bulk = reshape2::melt(ralign@assay$svd_correct@bulk[DE_gene_set,])
+bulk$type = "Tumor"
+
+dat = rbind(cell, bulk)
+require(ggplot2)
+p2 = Figs1_DenPlot(dat)
+p2
+```
+## svd mnn density plot
+```{r}
+DE_genes = ralign@fData
+DE_gene_set <- DE_genes %>%
+  dplyr::filter(best_rank < 1000) %>%
+  .[["Gene"]]
+
+cell = reshape2::melt(ralign@assay$mnn$svd_correct@cell[DE_gene_set,])
+cell$type = "Cell"
+bulk = reshape2::melt(ralign@assay$mnn$svd_correct@bulk[DE_gene_set,])
+bulk$type = "Tumor"
+
+dat = rbind(cell, bulk)
+require(ggplot2)
+p3 = Figs1_DenPlot(dat)
+p3
+```
+
+## combat density plot
+```{r}
+DE_genes = ralign@fData
+DE_gene_set <- DE_genes %>%
+  dplyr::filter(best_rank < 1000) %>%
+  .[["Gene"]]
+
+cell = reshape2::melt(ralign@assay$combat_correct@cell[DE_gene_set,])
+cell$type = "Cell"
+bulk = reshape2::melt(ralign@assay$combat_correct@bulk[DE_gene_set,])
+bulk$type = "Tumor"
+
+dat = rbind(cell, bulk)
+require(ggplot2)
+p4 = Figs1_DenPlot(dat)
+p4
+```
+## mnn density plot
+```{r}
+DE_genes = ralign@fData
+DE_gene_set <- DE_genes %>%
+  dplyr::filter(best_rank < 1000) %>%
+  .[["Gene"]]
+
+cell = reshape2::melt(ralign@assay$mnn$raw@cell[DE_gene_set,])
+cell$type = "Cell"
+bulk = reshape2::melt(ralign@assay$mnn$raw@bulk[DE_gene_set,])
+bulk$type = "Tumor"
+
+dat = rbind(cell, bulk)
+require(ggplot2)
+p5 = Figs1_DenPlot(dat)
+p5
+```
+
+## cPCA mnn density plot
+```{r}
+DE_genes = ralign@fData
+DE_gene_set <- DE_genes %>%
+  dplyr::filter(best_rank < 1000) %>%
+  .[["Gene"]]
+
+cell = reshape2::melt(ralign@assay$mnn$cPCA_correct@cell[DE_gene_set,])
+cell$type = "Cell"
+bulk = reshape2::melt(ralign@assay$mnn$cPCA_correct@bulk[DE_gene_set,])
+bulk$type = "Tumor"
+
+dat = rbind(cell, bulk)
+require(ggplot2)
+p6 = Figs1_DenPlot(dat)
+p6
+```
+# DimPlot
+## raw
+```{r}
+pd1 = FigS1_Dim(obj = ralign, assay = "raw", method = "umap", title = "Raw")
+pd2 = FigS1_Dim(obj = ralign, assay = "combat_correct", method = "umap", title = "Combat")
+pd3 = FigS1_Dim(obj = ralign, assay = "mnn_raw", method = "umap", title = "mnn")
+pd4 = FigS1_Dim(obj = ralign, assay = "mnn_cPCA_correct", method = "umap", title = "mnn_cPCA")
+```
+## arrange
+```{r}
+library(ggpubr)
+plist1 = list(raw = p1, svd = p2, svd_mnn = p3,
+             combat = p4, mnn = p5, cPCA_mnn = p6)
+gp1 = ggarrange(plotlist = plist1, ncol = 3, nrow = 2, labels = c("E", "F", "G", "H", "I", "J"))
+
+plist2 = list(raw = pd1, combat = pd2, mnn = pd3, cPCA_mnn = pd4)
+gp2 = ggarrange(plotlist = plist2, nrow = 2, ncol = 2, labels = c("A", "B", "C", "D"))
+
+gp = ggarrange(gp2, gp1, nrow = 2, heights = c(1.5, 1))
+ggsave(gp, filename = "../log/figure.s1.density.pdf", width = 8, height = 11)
+```
+
