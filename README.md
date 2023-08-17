@@ -36,7 +36,7 @@
 
 <p align="left">
   <a href="https://github.com/liuchuwei/Raligner">
-    <img src="_plots/Fig1.Graphical.png" alt="Logo" width="400" height="450">
+    <img src="_plots/Fig1.Graphical.png" alt="Logo" width="400" height="300">
   </a>
   </p>
 
